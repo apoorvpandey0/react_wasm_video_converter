@@ -6,6 +6,7 @@ const ffmpeg = createFFmpeg({ log: true });
 
 function App() {
 const [ready, setReady] = useState(false);
+const [video, setVideo] = useState();
 
 const load = async () => {
   await ffmpeg.load();
@@ -18,9 +19,20 @@ useEffect(() => {
 
 
 
- return (<div className="App">
+ return ready? 
+  <div className="App">
+          { video && <video
+        controls
+        width="250"
+        src={URL.createObjectURL(video)}>
 
- </div>);
+      </video>}
+
+
+      <input type="file" onChange={(e) => setVideo(e.target.files?.item(0))} />
+
+  </div>:
+  <div>Loading...</div>;
 }
 
 export default App;
