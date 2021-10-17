@@ -4,15 +4,33 @@ import './App.css';
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 const ffmpeg = createFFmpeg({ log: true });
 
+function Error(props) {
+  return (
+    <div className="error">
+      <h2>Error</h2>
+      <p>{props.message}</p>
+    </div>
+  );
+}
+
 function App() {
 const [ready, setReady] = useState(false);
 const [video, setVideo] = useState();
 const [gif, setGif] = useState();
 const [mp3, setMp3] = useState();
+const [loadError, setLoadError] = useState();
 
 const load = async () => {
-  await ffmpeg.load();
-  setReady(true);
+  try {
+    await ffmpeg.load();  
+    setReady(true);
+  } catch (error) {
+    console.log(error);
+    setLoadError(error);
+  }
+  
+  
+  
 }
 
 useEffect(() => {
@@ -49,7 +67,7 @@ const convertToMp3 = async () => {
   setMp3(url)
 } 
 
- return ready? 
+ return loadError? Error(loadError) : ready? 
   <div className="App">
     <h2>Video file to GIF converter</h2>
       
