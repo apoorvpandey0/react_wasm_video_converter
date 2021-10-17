@@ -8,6 +8,7 @@ function App() {
 const [ready, setReady] = useState(false);
 const [video, setVideo] = useState();
 const [gif, setGif] = useState();
+const [mp3, setMp3] = useState();
 
 const load = async () => {
   await ffmpeg.load();
@@ -33,6 +34,21 @@ const convertToGif = async () => {
   setGif(url)
 } 
 
+const convertToMp3 = async () => {
+  // Write the file to memory 
+  ffmpeg.FS('writeFile', 'test.mp4', await fetchFile(video));
+
+  // Run the FFMpeg command
+  await ffmpeg.run('-i', 'test.mp4', '-q:a', '0', '-map', 'a','out.mp3');
+
+  // Read the result
+  const data = ffmpeg.FS('readFile', 'out.mp3');
+
+  // Create a URL
+  const url = URL.createObjectURL(new Blob([data.buffer], { type: 'audio/mp3' }));
+  setMp3(url)
+} 
+
  return ready? 
   <div className="App">
     <h2>Video file to GIF converter</h2>
@@ -45,11 +61,22 @@ const convertToGif = async () => {
 
       <input type="file" onChange={(e) => setVideo(e.target.files?.item(0))} />
 
-      <h3>Result</h3>
+      <ul>
 
-      <button onClick={convertToGif}>Convert</button>
+        {/* Convert to GIF: */}
+        <li><h3>Convert to gif</h3>
+          <button onClick={convertToGif}>Convert</button>
+          { gif && <img src={gif} width="250" />}
+        </li>
 
-      { gif && <img src={gif} width="250" />}
+        {/* Convert to MP3: */}
+        <li><h3>Convert to mp3</h3>
+          <button onClick={convertToMp3}>Convert</button>
+          {mp3 && <audio controls>
+          <source src={mp3} type="audio/ogg"></source>
+          </audio>}
+        </li>
+      </ul>
   </div>:
   <div>Loading...</div>;
 }
