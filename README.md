@@ -1,4 +1,7 @@
-# React webassembly video to gif converter
+# React webassembly video converter
+
+1. Convert video to gif
+2. Extract audio from the video
 
 ![screenshot](assets/ss.png)
 
